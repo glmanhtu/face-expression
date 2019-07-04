@@ -1,7 +1,8 @@
 import keras.backend as ks
 from common.type import deep_model
 from keras.callbacks import ModelCheckpoint
-from common.type.fer2013 import num_class, img_width, img_height, Fer2013
+from common.type.fer2013 import num_class, img_width, img_height, Fer2013, label_map
+import tensorflow as tf
 
 # Set default shape of image: channel, width, height
 ks.set_image_data_format('channels_first')
@@ -10,6 +11,8 @@ ks.set_image_data_format('channels_first')
 ks.set_floatx('float32')
 
 dl_model = deep_model.generate_model(num_class, img_width, img_height)
+
+graph = tf.get_default_graph()
 
 
 def train_model(dataset_path, batch_size, epochs, checkpoint_path):
@@ -34,3 +37,13 @@ def train_model(dataset_path, batch_size, epochs, checkpoint_path):
 def load_model(checkpoint_path):
     dl_model.load_weights(checkpoint_path)
 
+
+def predict_image(image):
+    global graph
+    with graph.as_default():
+        img_out = image / 255.
+        return dl_model.predict_classes(img_out.reshape(1, 1, 48, 48))
+
+
+def get_actual_labels(index):
+    return label_map[index]

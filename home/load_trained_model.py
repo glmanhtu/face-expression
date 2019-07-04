@@ -1,7 +1,12 @@
-from PyQt5.QtCore import QCoreApplication
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QPushButton, QSizePolicy
+import os
 
+from PyQt5.QtCore import QCoreApplication, pyqtSlot, QDir, QMetaObject
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QLineEdit, QPushButton, QSizePolicy, QFileDialog
+
+from classification.classification import Classification
+from common.services import deep_learning_service, data_transporter_service
 from common.type.custom_ui import BQSizePolicy
+from common.utils.constants import WINDOW_CHANEL
 
 
 class LoadTrainedModelWidget(QWidget):
@@ -44,4 +49,18 @@ class LoadTrainedModelWidget(QWidget):
             _translate("MainWindow", "Please select the location of the trained model (*.hdf5)"))
         self.select_trained_file.setText(_translate("MainWindow", "..."))
         self.process_selected_file.setText(_translate("MainWindow", "Load selected model"))
-    
+
+        QMetaObject.connectSlotsByName(self)
+
+    @pyqtSlot(bool, name='on_selectTrainedFile_clicked')
+    def selectTrainedFile(self, checked):
+        fname = QFileDialog.getOpenFileName(self, 'Open file', QDir.homePath(), "HDF5 files (*.hdf5)")
+        if len(fname[0]) > 0:
+            self.trained_file_path.setText(fname[0])
+
+    @pyqtSlot(bool, name='on_processSelectedFile_clicked')
+    def loadTrainedFile(self, checked):
+        if os.path.isfile(self.trained_file_path.text()):
+            deep_learning_service.load_model(self.trained_file_path.text())
+            data_transporter_service.fire(WINDOW_CHANEL, Classification())
+

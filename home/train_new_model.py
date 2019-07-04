@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QCoreApplication
+from PyQt5.QtCore import QCoreApplication, QMetaObject
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QGridLayout, QLineEdit, QLabel, QPushButton, QHBoxLayout, QSizePolicy
 
@@ -56,3 +56,5 @@ class TrainNewModel(QWidget):
         self.label_4.setText(_translate("MainWindow", "Checkpoint dir:"))
         self.select_checkpoint_dir.setText(_translate("MainWindow", "..."))
         self.start_training.setText(_translate("MainWindow", "Start"))
+
+        QMetaObject.connectSlotsByName(self)
