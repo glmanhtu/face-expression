@@ -30,6 +30,9 @@ def train_model(dataset_path, batch_size, epochs, checkpoint_path):
                  callbacks=[checkpoint],
                  shuffle=True,
                  verbose=1)
+
+    # Load again the best checkpoint we've got so far
+    dl_model.load_weights(checkpoint_path)
     loss, accuracy = dl_model.evaluate(dataset.data_test, dataset.label_test_oh, batch_size=batch_size)
     print("Accuracy on the test data set: {:.2f}%, loss: [{:.3f}]".format(accuracy * 100, loss))
 
