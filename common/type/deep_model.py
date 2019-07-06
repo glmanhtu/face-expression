@@ -1,6 +1,19 @@
-from keras.layers import Conv2D, MaxPooling2D
-from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
-from keras.models import Sequential
+from keras import Input, Model
+from keras.layers import Conv2D, MaxPooling2D, concatenate, Dropout
+from keras.layers import Dense, Activation, Flatten, BatchNormalization
+
+
+def featex_block(input_layers):
+    """
+    @see https://arxiv.org/abs/1509.05371
+    :param input_layers: previous layers
+    :return:
+    """
+    conv_2a = Activation('relu')((Conv2D(96, 1)(input_layers)))
+    max_pool_2a = MaxPooling2D(pool_size=(3, 3), strides=1)(input_layers)
+    conv_2b = Activation('relu')((Conv2D(208, 3))(conv_2a))
+    conv_2c = Activation('relu')((Conv2D(64, 1))(max_pool_2a))
+    return concatenate([conv_2b, conv_2c], axis=1)
 
 
 def generate_model(n_classes, img_width, img_height):
@@ -11,54 +24,24 @@ def generate_model(n_classes, img_width, img_height):
     :param img_height: height of the input image
     :return:
     """
-    model = Sequential()
+    inputs = Input(shape=(1, img_width, img_height))
+    model = Conv2D(64, (3, 3), padding='same', input_shape=(1, img_width, img_height))(inputs)
 
-    # 1st - Convolution layer
-    model.add(Conv2D(64, (3, 3), padding='same', input_shape=(1, img_width, img_height)))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model = BatchNormalization()(model)
+    model = Activation('relu')(model)
+    model = MaxPooling2D(pool_size=(2, 2))(model)
 
-    # 2nd Convolution layer
-    model.add(Conv2D(128, (3, 3), padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model = featex_block(model)
+    model = featex_block(model)
+    # model = Dropout(0.25)(model)
 
-    # 3rd Convolution layer
-    model.add(Conv2D(256, (3, 3), padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-
-    # 4th Convolution layer
-    model.add(Conv2D(512, (3, 3), padding='same'))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
-
-    # Flattening before going into fully connected layer
-    model.add(Flatten())
-
-    # 1st Fully connected layer
-    model.add(Dense(256))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.25))
-
-    # 2nd Fully connected layer
-    model.add(Dense(512))
-    model.add(BatchNormalization())
-    model.add(Activation('relu'))
-    model.add(Dropout(0.25))
+    model = Flatten()(model)
 
     # Output Fully connected layer
-    model.add(Dense(n_classes))
-    model.add(Activation('sigmoid'))
+    model = Dense(n_classes)(model)
+    model = Activation('sigmoid')(model)
+
+    model = Model(inputs=inputs, outputs=model)
 
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
     return model
