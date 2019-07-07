@@ -23,13 +23,15 @@ class Thread(QThread):
                 for (x, y, w, h) in faces:
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 255), 2)
 
-                if (len(faces)) == 0:
-                    x = y = w = h = 10
-                crop_img = frame[y: y + h, x: x + w]
-                gray_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
-                img_out = cv2.resize(gray_img, (48, 48), interpolation=cv2.INTER_CUBIC)
-                predicted = deep_learning_service.predict_image(img_out)
-                emotion = deep_learning_service.get_actual_labels(predicted[0])
+                if (len(faces)) != 0:
+                    crop_img = frame[y: y + h, x: x + w]
+                    gray_img = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
+                    img_out = cv2.resize(gray_img, (48, 48), interpolation=cv2.INTER_CUBIC)
+                    predicted = deep_learning_service.predict_image(img_out)
+                    emotion = deep_learning_service.get_actual_labels(predicted[0])
+                    self.changeEmotion.emit(emotion)
+                else:
+                    self.changeEmotion.emit("None")
 
                 rgb_image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 h, w, ch = rgb_image.shape
@@ -37,7 +39,6 @@ class Thread(QThread):
                 convert_to_qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
                 p = convert_to_qt_format.scaled(640, 480, Qt.KeepAspectRatio)
                 self.changePixmap.emit(p)
-                self.changeEmotion.emit(emotion)
 
 
 class FromCameraWidget(QWidget):
@@ -53,7 +54,10 @@ class FromCameraWidget(QWidget):
 
     @pyqtSlot(str)
     def setEmotion(self, emotion):
-        self.emotion.setText(self._translate("MainWindow", "Detected face emotion: " + emotion))
+        if emotion == "None":
+            self.emotion.setText(self._translate("MainWindow", "No face detected"))
+        else:
+            self.emotion.setText(self._translate("MainWindow", "Detected face emotion: " + emotion))
 
     def initUI(self):
         self.mainLayout = QVBoxLayout(self)

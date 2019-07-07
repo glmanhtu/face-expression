@@ -1,8 +1,15 @@
+import argparse
 import csv
 import re
-import sys
 
-log_file = sys.argv[1]
+parser = argparse.ArgumentParser(description="Analysing the training log file")
+
+parser.add_argument('-f', '--file', type=str, required=True, dest='log_file',
+                    help='Path of the log file')
+parser.add_argument('-o', '--out-file', type=str, default='output.csv', dest='out_file',
+                    help='Path of the analysed file')
+
+args = parser.parse_args()
 
 
 def get_n_epoch(log_line):
@@ -20,7 +27,7 @@ def get_epoch_result(log_line):
 
 
 val_result = []
-with open(log_file) as f:
+with open(args.log_file) as f:
     epoch = 0
     for line in f:
         ep, total = get_n_epoch(line)
@@ -30,7 +37,7 @@ with open(log_file) as f:
         if val_acc is not None:
             val_result.append({'epoch': epoch, 'loss': loss, 'acc': acc, 'val_loss': val_loss, 'val_acc': val_acc})
 
-with open('output.csv', 'w') as f:  # Just use 'w' mode in 3.x
+with open(args.out_file, 'w') as f:  # Just use 'w' mode in 3.x
     w = csv.DictWriter(f, val_result[0].keys())
     w.writeheader()
     w.writerows(val_result)
