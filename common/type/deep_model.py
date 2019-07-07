@@ -32,7 +32,6 @@ def generate_model(n_classes, img_width, img_height):
     model = MaxPooling2D(pool_size=(2, 2))(model)
     model = Dropout(0.25)(model)
     model = featex_block(model)
-    model = Dropout(0.25)(model)
     model = featex_block(model)
     model = Dropout(0.25)(model)
 
