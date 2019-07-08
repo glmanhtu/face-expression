@@ -1,5 +1,5 @@
 from PyQt5.QtCore import QCoreApplication, QRect, QMetaObject, Qt, pyqtSlot
-from PyQt5.QtWidgets import QMainWindow, QMenuBar, QSizePolicy, QWidget, QFrame, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QMainWindow, QMenuBar, QSizePolicy, QWidget, QFrame, QVBoxLayout, QHBoxLayout
 
 from classification.from_camera_widget import FromCameraWidget
 from classification.from_image_widget import FromImageWidget
