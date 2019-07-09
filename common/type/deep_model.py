@@ -18,28 +18,28 @@ def generate_model(n_classes, img_width, img_height):
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.15))
 
     # 2nd Convolution layer
     model.add(Conv2D(128, (3, 3), padding='same'))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.25))
+    model.add(Dropout(0.15))
 
     # 3rd Convolution layer
     model.add(Conv2D(256, (3, 3), padding='same'))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.3))
+    model.add(Dropout(0.15))
 
     # 4th Convolution layer
     model.add(Conv2D(512, (3, 3), padding='same'))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.35))
+    model.add(Dropout(0.15))
 
     # Flattening before going into fully connected layer
     model.add(Flatten())
@@ -48,17 +48,17 @@ def generate_model(n_classes, img_width, img_height):
     model.add(Dense(256))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
-    model.add(Dropout(0.4))
+    model.add(Dropout(0.15))
 
     # 2nd Fully connected layer
     model.add(Dense(512))
     model.add(BatchNormalization())
     model.add(Activation('relu'))
-    model.add(Dropout(0.45))
+    model.add(Dropout(0.15))
 
     # Output Fully connected layer
     model.add(Dense(n_classes))
     model.add(Activation('sigmoid'))
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['categorical_accuracy'])
     return model
