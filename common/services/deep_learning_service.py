@@ -30,7 +30,7 @@ def train_model(dataset_path, batch_size, epochs, checkpoint_path):
     :param epochs: how many time we repeat our train dataset
     :param checkpoint_path: file to save the checkpoint
     """
-    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
     # Load the given dataset
     dataset = Fer2013(dataset_path)
