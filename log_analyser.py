@@ -20,7 +20,7 @@ def get_n_epoch(log_line):
 
 
 def get_epoch_result(log_line):
-    val = re.search(r'loss:\s([\d.]+)\s-\sacc:\s([\d.\d]+)\s-\sval_loss:\s([\d.]+)\s-\sval_acc:\s([\d.\d]+)', log_line)
+    val = re.search(r'loss:\s([\d.]+)\s-\scategorical_accuracy:\s([\d.\d]+)\s-\sval_loss:\s([\d.]+)\s-\sval_categorical_accuracy:\s([\d.\d]+)', log_line)
     if val:
         return val.group(1), val.group(2), val.group(3), val.group(4)
     return None, None, None, None
