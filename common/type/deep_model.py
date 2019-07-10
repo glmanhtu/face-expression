@@ -60,5 +60,5 @@ def generate_model(n_classes, img_width, img_height):
     model.add(Dense(n_classes))
     model.add(Activation('sigmoid'))
 
-    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['categorical_accuracy'])
     return model

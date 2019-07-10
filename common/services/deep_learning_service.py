@@ -1,8 +1,10 @@
 import keras.backend as ks
-from common.type import deep_model
-from keras.callbacks import ModelCheckpoint
-from common.type.fer2013 import num_class, img_width, img_height, Fer2013, label_map
 import tensorflow as tf
+from keras.callbacks import ModelCheckpoint
+# from sklearn.metrics import confusion_matrix
+
+from common.type import deep_model
+from common.type.fer2013 import num_class, img_width, img_height, Fer2013, label_map
 
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
@@ -28,7 +30,7 @@ def train_model(dataset_path, batch_size, epochs, checkpoint_path):
     :param epochs: how many time we repeat our train dataset
     :param checkpoint_path: file to save the checkpoint
     """
-    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
+    checkpoint = ModelCheckpoint(checkpoint_path, monitor='val_acc', verbose=1, save_best_only=True, mode='max')
 
     # Load the given dataset
     dataset = Fer2013(dataset_path)
@@ -55,6 +57,16 @@ def load_model(checkpoint_path):
     :param checkpoint_path: path to the saved checkpoint
     """
     dl_model.load_weights(checkpoint_path)
+    # dataset = Fer2013("fer2013/fer2013.csv")
+    #
+    # loss, accuracy = dl_model.evaluate(dataset.data_test, dataset.label_test_oh, batch_size=128)
+    # print("Accuracy on the test data set: {:.2f}%, loss: [{:.3f}]".format(accuracy * 100, loss))
+    #
+    # predictions = dl_model.predict(dataset.data_test)
+    # matrix = confusion_matrix(dataset.label_test_oh.argmax(axis=1), predictions.argmax(axis=1))
+    #
+    # print('Confusion Matrix')
+    # print(matrix)
 
 
 def predict_image(image):
